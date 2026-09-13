@@ -1,4 +1,15 @@
-const API_BASE = 'https://swasthyasathi-server.onrender.com/api';
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3001/api'
+  : 'https://swasthyasathi-server.onrender.com/api';
+
+function handleAuthError() {
+  localStorage.removeItem('swasthyasathi_token');
+  localStorage.removeItem('swasthyasathi_user');
+  // Only redirect if not already on login page
+  if (window.location.pathname !== '/login') {
+    window.location.href = '/login';
+  }
+}
 
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('swasthyasathi_token');
@@ -11,7 +22,16 @@ async function request(endpoint, options = {}) {
   try {
     const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Request failed');
+    if (!res.ok) {
+      // Handle token errors centrally — clear stale token and redirect to login
+      if (res.status === 401 || res.status === 403) {
+        const msg = (data.error || '').toLowerCase();
+        if (msg.includes('token') || msg.includes('expired') || msg.includes('invalid') || msg.includes('access token')) {
+          handleAuthError();
+        }
+      }
+      throw new Error(data.error || 'Request failed');
+    }
     return data;
   } catch (err) {
     if (err.message === 'Failed to fetch') {

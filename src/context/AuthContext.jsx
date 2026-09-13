@@ -18,6 +18,14 @@ export function AuthProvider({ children }) {
     }
     setLoading(false);
 
+    // Validate token with server in the background.
+    // If token is invalid/expired, the centralized handler in api.js will redirect to login.
+    if (token) {
+      api.getProfile().catch(() => {
+        // Token invalid/expired — api.js already handles the redirect
+      });
+    }
+
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
     window.addEventListener('online', handleOnline);

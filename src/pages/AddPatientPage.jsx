@@ -15,7 +15,7 @@ export default function AddPatientPage() {
     fullName: '', age: '', gender: '', mobileNumber: '', address: '',
     village: user?.assigned_village || '', district: user?.assigned_district || '',
     pinCode: user?.assigned_pin || '', assignedArea: user?.assigned_village || '',
-    emergencyContact: '', emergencyContactName: '',
+    emergencyContact: '', emergencyContactName: '', 
     mainComplaint: '', symptoms: '', symptomDuration: '',
     temperature: '', bloodPressureSystolic: '', bloodPressureDiastolic: '',
     bloodOxygen: '', existingConditions: '', currentMedications: '',
